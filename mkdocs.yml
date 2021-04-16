@@ -1,0 +1,8 @@
+site_name: "golinks"
+site_description: "GO Links Docs"
+
+nav:
+  - Introduction: index.md
+
+plugins:
+  - techdocs-core

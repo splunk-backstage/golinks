@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "golinks"
+  description: "GO Links Docs"
+  annotations:
+    github.com/project-slug: tonytam-splunk/golinks
+    backstage.io/techdocs-ref: url:https://github.com/tonytam-splunk/golinks
+spec:
+  type: documentation
+  lifecycle: experimental
+  owner: "tonytam-splunk"
