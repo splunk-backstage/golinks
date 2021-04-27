@@ -4,8 +4,8 @@ metadata:
   name: "golinks"
   description: "GO Links Docs"
   annotations:
-    github.com/project-slug: tonytam-splunk/golinks
-    backstage.io/techdocs-ref: url:https://github.com/tonytam-splunk/golinks
+    github.com/project-slug: splunk-backstage/golinks
+    backstage.io/techdocs-ref: url:https://github.com/splunk-backstage/golinks
 spec:
   type: documentation
   lifecycle: experimental
