@@ -10,7 +10,7 @@
       "email": "dl-mgr-ttam-all@splunk.com"
     }
   },
-  "basePath": "/api/v1",
+  "basePath": "https://go.splunk.com/api/v1",
   "tags": [
     {
       "name": "links",
