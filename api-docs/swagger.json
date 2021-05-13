@@ -1,0 +1,371 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is an Express server which holds all the API endpoints for the GO URL service. http://go/ | #golink-community",
+    "version": "1.0.0",
+    "title": "GO Url Shortener API",
+    "contact": {
+      "name": "File a Jira ticket ",
+      "url": "http://go/ep/help",
+      "email": "dl-mgr-ttam-all@splunk.com"
+    }
+  },
+  "basePath": "/api/v1",
+  "tags": [
+    {
+      "name": "links",
+      "description": "Information about GO links"
+    },
+    {
+      "name": "owners",
+      "description": "Information about GO link owners"
+    },
+    {
+      "name": "requests",
+      "description": "Request operations"
+    },
+    {
+      "name": "users",
+      "description": "Information about team directory"
+    }
+  ],
+  "schemes": ["https"],
+  "paths": {
+    "/links": {
+      "get": {
+        "tags": ["links"],
+        "summary": "Gets list of links based off search criteria",
+        "description": "",
+        "operationId": "getLinks",
+        "consumes": ["application/x-www-form-urlencoded"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "searchQuery",
+            "description": "The search term entered by user",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "searchType",
+            "description": "Search by keyword, owner, url, title",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "How many results to return",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "Number of results to skip before starting to collect the results",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "daysBefore",
+            "description": "Look back window (in days) of results",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns links"
+          },
+          "400": {
+            "description": "Unable to get links"
+          }
+        }
+      },
+      "post": {
+        "tags": ["links"],
+        "summary": "Add a new GO link",
+        "description": "",
+        "operationId": "addLink",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Link object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostLink"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Unable to create link"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/links/{keyword}": {
+      "put": {
+        "tags": ["links"],
+        "summary": "Updates link data",
+        "description": "",
+        "operationId": "updateLink",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Object with link updates",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PutLink"
+            }
+          },
+          {
+            "in": "path",
+            "name": "keyword",
+            "description": "The keyword to update",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Link updated"
+          },
+          "400": {
+            "description": "Missing parameters"
+          },
+          "500": {
+            "description": "Update Unsuccessful"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["links"],
+        "summary": "Delete link",
+        "description": "",
+        "operationId": "deleteLink",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "keyword",
+            "description": "The keyword to delete",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Link deleted"
+          },
+          "401": {
+            "description": "Unauthorized link owner"
+          },
+          "500": {
+            "description": "Delete unsuccessful"
+          }
+        }
+      }
+    },
+    "/requests": {
+      "get": {
+        "tags": ["requests"],
+        "summary": "Get requests for authorized user",
+        "description": "",
+        "operationId": "getAllRequests",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "direction",
+            "description": "Either Sent or Received requests",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get requests for authorized user"
+          },
+          "400": {
+            "description": "Error getting requests"
+          }
+        }
+      },
+      "post": {
+        "tags": ["requests"],
+        "summary": "Create new request to owner to update link",
+        "description": "",
+        "operationId": "postRequest",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Object with link updates",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created new request"
+          },
+          "400": {
+            "description": "Missing field or error creating request"
+          }
+        }
+      }
+    },
+    "/requests/{requestId}": {
+      "post": {
+        "tags": ["requests"],
+        "summary": "Approve or deny request",
+        "description": "",
+        "operationId": "processEditRequest",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "requestId",
+            "description": "Request ID",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "approve",
+            "description": "Request ID",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request approved or denied"
+          },
+          "404": {
+            "description": "Request ID not found"
+          },
+          "403": {
+            "description": "User is not the owner of link"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PostLink": {
+      "type": "object",
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "clicks": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "PutLink": {
+      "type": "object",
+      "properties": {
+        "newkeyword": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "owners": {
+          "type": "string"
+        }
+      }
+    },
+    "PostRequest": {
+      "type": "object",
+      "properties": {
+        "requestee": {
+          "type": "string"
+        },
+        "beforeState": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "keyword": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "owners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "desiredState": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "keyword": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "owners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "comment": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
