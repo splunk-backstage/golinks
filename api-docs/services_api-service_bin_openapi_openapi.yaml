@@ -1,0 +1,260 @@
+openapi: "3.0.0"
+
+info:
+  title: Team Directory Service
+  version: "1.0"
+servers:
+  - url: /v1.0
+    description: Relative path with version
+
+paths:
+  # TODO: Should be redirect to OpenApi Spec
+  /:
+    get:
+      summary: Greetings
+      description: Greetings
+      operationId: handlers.greetings.get_greetings
+      responses:
+        200:
+          description: Print greeting message
+          content:
+            text/plain:
+              schema:
+                type: string
+  # Use new API /teams/{team_name}
+  /get_team_members/{team}:
+    get:
+      deprecated: true
+      summary: Get members of a specific team
+      description: Get members of a specific team
+      operationId: handlers.teams.get_team_members
+      responses:
+        200:
+          description: Get members of a specific team
+          content:
+            text/plain:
+              schema:
+                type: json
+                example: {"IF-x": {"jpeng": "Jiangtao Peng"}}
+      parameters:
+        - name: team
+          in: path
+          description: Name of the team id to search.
+          required: true
+          schema:
+            type: string
+            example: "IF-x"
+  # Use new API /teams?type=Mission
+  /get_mission_teams:
+    get:
+      deprecated: true
+      summary: Get list of mission teams
+      description: Get list of mission teams
+      operationId: handlers.teams.get_mission_teams
+      responses:
+        200:
+          description: List of mission teams
+          content:
+            text/plain:
+              schema:
+                type: json
+                example: {"Mission Teams": {"Reporting Team": "IF-14"}}
+  /teams:
+    get:
+      summary: List all teams in the organization.
+      description: List all teams in the organization and several filters are supported.
+      operationId: handlers.teams.list_teams
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Pattern of the teams' name
+        - name: area
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Pattern of the teams' area
+        - name: type
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Pattern of the teams's type
+      responses:
+        200:
+          description: List of teams in the organization
+          content:
+            text/plain:
+              schema:
+                type: json
+  /teams/{team_name}:
+    get:
+      summary: Get team in the organization by name.
+      description: Get team in the organization by name and several filters are supported.
+      operationId: handlers.teams.get_team_by_name
+      parameters:
+        - name: team_name
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Name of the team
+        - name: area
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Pattern of the teams' area
+        - name: type
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Pattern of the teams's type
+      responses:
+        200:
+          description: List of teams' information
+          content:
+            text/plain:
+              schema:
+                type: json
+  /persons:
+    get:
+      summary: List all persons in the organization.
+      description: List all persons in the organization and several filters are supported.
+      operationId: handlers.persons.list_persons
+      parameters:
+        - name: name
+          in: query
+          description: Persons' name, use comma as delimiter of multiple names.
+          required: false
+          schema:
+            type: string
+        - name: location
+          in: query
+          description: Persons' location.
+          required: false
+          schema:
+            type: string
+        - name: title
+          in: query
+          description: Persons' title.
+          required: false
+          schema:
+            type: string
+        - name: with_manager
+          in: query
+          description: Retrieve the person's manager when it's true.
+          required: false
+          schema:
+            type: boolean
+        - name: with_direct_subordinates
+          in: query
+          description: |
+            Retrieve the person's direct subordinates when it's true.
+            (Only works when at least one filter is applied)
+          required: false
+          schema:
+            type: boolean
+        - name: with_all_subordinates
+          in: query
+          description: |
+            Retrieve the person's all subordinates when it's true
+            (Only works when at least one filter is applied)
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: List of persons' information
+          content:
+            text/plain:
+              schema:
+                type: json
+  /persons/{person_name}:
+    get:
+      summary: Get person in the organization by name.
+      description: Get a person in the organization by name.
+      operationId: handlers.persons.get_person_by_name
+      parameters:
+        - name: person_name
+          in: path
+          description: Person's name
+          required: true
+          schema:
+            type: string
+        - name: with_manager
+          in: query
+          description: Retrieve the person's manager when it's true
+          required: false
+          schema:
+            type: boolean
+        - name: with_direct_subordinates
+          in: query
+          description: Retrieve the person's direct subordinates when it's true
+          required: false
+          schema:
+            type: boolean
+        - name: with_all_subordinates
+          in: query
+          description: Retrieve the person's all subordinates when it's true
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: The person's information
+          content:
+            text/plain:
+              schema:
+                type: json
+  /persons/{person_name}/teams:
+    get:
+      summary: Get teams that the person involves.
+      description: Get teams that the person involves and several filters are supported.
+      operationId: handlers.persons.list_teams
+      parameters:
+        - name: person_name
+          in: path
+          description: Person's name
+          required: true
+          schema:
+            type: string
+            #example: "tyou"
+        - name: type
+          in: query
+          description: Filter teams by type
+          required: false
+          schema:
+            type: string
+        - name: as_member
+          in: query
+          description: Filter teams with the person as a member
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: as_leader
+          in: query
+          description: Filter teams with the person as a direct leader
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: as_indirect_leader
+          in: query
+          description: Filter teams with the person as an indirect leader
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        200:
+          description: List of teams' information
+          content:
+            text/plain:
+              schema:
+                type: json
