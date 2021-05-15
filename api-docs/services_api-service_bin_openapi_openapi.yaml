@@ -4,7 +4,7 @@ info:
   title: Team Directory Service
   version: "1.0"
 servers:
-  - url: /v1.0
+  - url: http://team-directory.splunkeng.com/v1.0/v1.0
     description: Relative path with version
 
 paths:
